@@ -6,6 +6,7 @@ from datetime import datetime
 
 spotify_blueprint = Blueprint('spotify', __name__)
 
+# The following code sets up the necessary environment variables and URLs for the Spotify API.
 S_CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
 S_CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
 REDIRECT_URI = 'http://localhost:5000/callback'
