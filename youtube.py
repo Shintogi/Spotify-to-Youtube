@@ -2,7 +2,7 @@ import os
 import json
 import requests
 import urllib.parse
-from flask import Blueprint,redirect,request,session,render_template
+from flask import Blueprint,redirect,request,session,render_template, jsonify
 
 youtube_blueprint = Blueprint('youtube', __name__)
 
@@ -31,3 +31,26 @@ def youtube_login():
     #Redirect users to OAUTH consent screen
     AUTH_URL =  f"{AUTH_URL}?{urllib.parse.urlencode(parameters)}"
     return redirect(AUTH_URL)
+
+    #youtube callback with 'code'
+@youtube_blueprint.route('/youtube/callback')
+def youtube_callback():
+    if 'error' in request.args:
+        return jsonify({"error": request.args['error']})
+    if 'code' in request.args:
+        req_body = {
+            'code': request.args['code'],
+            'grant_type': 'authorization_code',
+            'redirect_uri': REDIRECT_URI,
+            'client_id': Y_Client_ID,
+            'client_secret': Y_Client_Secret,
+        }
+        response = requests.post(TOKEN_URL, data=req_body)
+        token_info = response.json()
+        session['yt_access_token'] = token_info.get('access_token')
+        session['yt_refresh_token'] = token_info.get('refresh_token')
+
+# main playlists functionality
+    
+        
+
