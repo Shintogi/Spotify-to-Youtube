@@ -51,6 +51,68 @@ def youtube_callback():
         session['yt_refresh_token'] = token_info.get('refresh_token')
 
 # main playlists functionality
+@youtube_blueprint.route('/youtube/create_playlists', methods = ['GET', 'POST']) # it is supposed to display a form to get playlist details such as names and description
+def create_youtube_playlist():
+        if 'yt_access_token' not in session:
+            return redirect('/youtube/login')  # Redirect to login if token is missing
+        
+        if request.method == 'GET':
+            #Display a way for usuers to input playlist specifications
+            return '''
+            <form method="post">
+                <label>Playlist Name:</label><br>
+                <input type="text" name="playlist_name" required><br><br>
+                <label>Description:</label><br>
+                <textarea name="description"></textarea><br><br>
+                <label>Privacy:</label><br>
+                <select name="privacy_status">
+                    <option value="public">Public</option>
+                    <option value="private">Private</option>
+                    <option value="unlisted">Unlisted</option>
+                </select><br><br>
+                <button type="submit">Create Playlist</button>
+            </form>
+        '''
+        elif request.method == 'POST':
+            #User input
+            playlist_name = request.form.get('playlist_name')
+            playlist_description = request.form.get('playlist_description')
+            playlist_privacy_status = request.form.get('playlist_privacy_status')
+            
+            
+        headers = {
+            'Authorization': f"Bearer{session['youtube_access_token']}",
+            'Content-Type': 'application/json'
+        }
+        #request Body // this should grab the main inputs given in the request methods 'GET'
+        body = {
+            'snippet': {
+                'title':playlist_name,
+                'description': playlist_description
+            },
+            'status': {
+                'privacy_status': playlist_privacy_status
+            }
+        }
+        
+        # Call Yt API to create this playlist
+        reponse = requests.post(
+            f"{API_BASE_URL}playlist?part=snippet,status",
+            headers=headers,
+            json=body
+        )
+        
+        #Error handling / debugging
+        if reponse.status_code == 200:
+            playlist_id = reponse.json()['id']
+            return f"Playlist '{playlist_name}' created successfully! Playlist ID: {playlist_id}"
+        else:
+            error_info = reponse.json()
+            return f"Failed to create playlist: {error_info.get('error', {}).get('message', 'Unknown error')}", reponse.status_code
+            
+
+
     
+
         
 
