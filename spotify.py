@@ -66,6 +66,20 @@ def get_playlists():
     playlists = response.json().get('items', [])
     
     return render_template('playlists.html', playlists=playlists)
+@spotify_blueprint.route('/tracks/<playlist_id>')
+def get_tracks(playlist_id):
+    if 'access_token' not in session:
+        return redirect('/spotify/login')
+    if datetime.now().timestamp() > session['expires_at']:
+        return redirect('/spotify/refresh-token')
+    headers = {
+        'Authorization': f"Bearer {session['access_token']}"
+    }
+
+    url = f"{API_BASE_URL}playlists/{playlist_id}/tracks"
+    response = requests.get(url, headers=headers)
+    tracks = response.json().get('items', [])
+    return render_template('tracks.html', tracks=tracks)
 
 @spotify_blueprint.route('/refresh-token')
 def refresh_token():
@@ -84,3 +98,5 @@ def refresh_token():
         session['access_token'] = new_token_info['access_token']
         session['expires_at'] = datetime.now().timestamp() + new_token_info['expires_in']
         return redirect('/playlists') 
+    
+    
