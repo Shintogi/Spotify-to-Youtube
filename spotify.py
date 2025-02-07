@@ -9,7 +9,7 @@ spotify_blueprint = Blueprint('spotify', __name__)
 # The following code sets up the necessary environment variables and URLs for the Spotify API.
 S_CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
 S_CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
-REDIRECT_URI = 'http://localhost:5000/callback'
+REDIRECT_URI = 'http://localhost:5000/spotify/callback'
 AUTH_URL = 'https://accounts.spotify.com/authorize'
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
 API_BASE_URL = 'https://api.spotify.com/v1/'
@@ -20,7 +20,7 @@ def index():
 
 @spotify_blueprint.route('/login')
 def login():
-    scope = 'user-read-private user-read-email'
+    scope = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative'
     parameters = {
         'client_id': S_CLIENT_ID,
         'response_type': 'code',
@@ -48,7 +48,7 @@ def callback():
         session['access_token'] = token_info['access_token']
         session['refresh_token'] = token_info['refresh_token']
         session['expires_at'] = datetime.now().timestamp() + token_info['expires_in']
-        return redirect('/playlists')
+        return redirect('/spotify/playlists')
 
 @spotify_blueprint.route('/playlists')
 def get_playlists():
@@ -70,15 +70,21 @@ def get_playlists():
 def get_tracks(playlist_id):
     if 'access_token' not in session:
         return redirect('/spotify/login')
+
     if datetime.now().timestamp() > session['expires_at']:
         return redirect('/spotify/refresh-token')
-    headers = {
-        'Authorization': f"Bearer {session['access_token']}"
-    }
 
+    headers = {'Authorization': f"Bearer {session['access_token']}"}
     url = f"{API_BASE_URL}playlists/{playlist_id}/tracks"
-    response = requests.get(url, headers=headers)
-    tracks = response.json().get('items', [])
+    
+    tracks = []  # Store all tracks
+
+    while url:  # Continue fetching until there's no 'next' page
+        response = requests.get(url, headers=headers)
+        data = response.json()
+        tracks.extend(data.get('items', []))  # Append fetched tracks
+        url = data.get('next')  # Update URL to the next page
+
     return render_template('tracks.html', tracks=tracks)
 
 @spotify_blueprint.route('/refresh-token')
@@ -97,6 +103,6 @@ def refresh_token():
         new_token_info = response.json()
         session['access_token'] = new_token_info['access_token']
         session['expires_at'] = datetime.now().timestamp() + new_token_info['expires_in']
-        return redirect('/playlists') 
+        return redirect('/spotify/playlists') 
     
     

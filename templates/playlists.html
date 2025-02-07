@@ -7,7 +7,14 @@
 </head>
 <body>
     <h1>Playlists</h1>
-    <form action="/query_youtube" method="POST">
+    <!-- Debug output -->
+    {% if playlists %}
+        <p>Number of playlists: {{ playlists|length }}</p>
+    {% else %}
+        <p>No playlists found</p>
+    {% endif %}
+    
+    <form action="/connector/query_youtube" method="POST">
         <label for="playlist">Select a Playlist:</label>
         <select name="playlist_id" id="playlist">
             {% for playlist in playlists %}
