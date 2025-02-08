@@ -40,7 +40,8 @@ cd spot-to-tube
 3. After logging in, you will be redirected to view your Spotify playlists.
 4. Select a playlist and click "Query YouTube" to start the transfer process.
 5. Follow the prompts to log in to your YouTube account and create a new playlist.
-
+##  Contact
+Denzel Fynn - denzelfynn100@gmail.com
 ## Roadmap
 - Add support for transferring individual tracks.
 - Implement user settings for managing API keys.
