@@ -13,14 +13,15 @@ cd spot-to-tube
  ```
 3.Install required packages  
    ```
-   bash pip install -r requirements.txt
-   ```
-  optional 
-  ```
-  Flask==2.0.3
-  requests==2.26.0
-  python-dotenv==0.19.2
-  ```
+ bash
+ pip install -r requirements.txt
+ ```
+ optional 
+ ```
+ Flask==2.0.3
+ requests==2.26.0
+ python-dotenv==0.19.2
+ ```
 4. Set up your environment variables in a `.env` file  
    ```plaintext
    SPOTIPY_CLIENT_ID=your_spotify_client_id
