@@ -3,13 +3,12 @@ import requests
 import urllib.parse
 from flask import Blueprint, redirect, request, session, jsonify, render_template
 from datetime import datetime
-
 spotify_blueprint = Blueprint('spotify', __name__)
-
 # The following code sets up the necessary environment variables and URLs for the Spotify API.
+
 S_CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
 S_CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
-REDIRECT_URI = 'http://localhost:5000/spotify/callback'
+REDIRECT_URI = 'http://127.0.0.1:5000/spotify/callback'
 AUTH_URL = 'https://accounts.spotify.com/authorize'
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
 API_BASE_URL = 'https://api.spotify.com/v1/'
@@ -49,6 +48,7 @@ def callback():
         session['refresh_token'] = token_info['refresh_token']
         session['expires_at'] = datetime.now().timestamp() + token_info['expires_in']
         return redirect('/spotify/playlists')
+        print(reponse.json())
 
 @spotify_blueprint.route('/playlists')
 def get_playlists():
