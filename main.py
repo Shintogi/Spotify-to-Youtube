@@ -1,5 +1,6 @@
 import os
-from dotenv import load_dotenv 
+from dotenv import load_dotenv
+from requests import Session 
 load_dotenv() #runs the env before the blueprints to prevent running into client id invalid error
 from flask import Flask, render_template
 from spotify import spotify_blueprint
