@@ -6,7 +6,7 @@ from spotify import spotify_blueprint
 from youtube import youtube_blueprint
 from connector import connector_blueprint
 app = Flask(__name__)
-
+app.secret_key = os.getenv('SECRET_KEY')
 app.config['SESSION_TYPE'] = 'filesystem'  # stores session data in server files instead of browser cookie
 app.config['SESSION_FILE_DIR'] = './flask_session'  # folder where session files are saved
 app.config['SESSION_PERMANENT'] = False  # session expires when browser closes
