@@ -3,7 +3,7 @@ import requests
 import os
 
 connector_blueprint = Blueprint('connector', __name__)
-print("Session contents in process_transfer:", session)
+
 def add_to_youtube_playlist(video_id, playlist_id, youtube_headers):
     """Helper function to add videos to playlist"""
     try:
@@ -53,16 +53,17 @@ def query_youtube():
     if not playlist_id:
         print("No playlist ID found")
         return "No playlist selected", 400
-        session[pending_playlist_id] = playlist_id
+       
     # Redirect to the playlist creation form
+    session['pending_playlist_id'] = playlist_id
+    print("Saving playlist ID:", playlist_id)
     return redirect('/youtube/create_playlist')
 
 @connector_blueprint.route('/process_transfer')
 def process_transfer(): 
+    print("Session in process_transfer:", session)
     if 'yt_access_token' not in session:
         return redirect('/youtube/login')
-        
-    if 'pending_spotify_playlist_id' not in session:
         return "No playlist selected", 400
         
     # Get the stored Spotify playlist ID

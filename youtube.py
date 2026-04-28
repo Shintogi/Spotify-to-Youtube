@@ -138,6 +138,7 @@ def create_youtube_playlist():
             spotify_playlist_id = session.get('pending_playlist_id')
             
             if not spotify_playlist_id:
+                print("Full session contents:", dict(session))
                 return "No Spotify playlist ID found", 400
                 
             # Get Spotify tracks
