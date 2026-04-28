@@ -6,7 +6,14 @@ from spotify import spotify_blueprint
 from youtube import youtube_blueprint
 from connector import connector_blueprint
 app = Flask(__name__)
-app.secret_key = 'q8BX2vUR@IQNIrN6ajL9OkZLR3%y9rtaLsD'
+
+app.config['SESSION_TYPE'] = 'filesystem'  # stores session data in server files instead of browser cookie
+app.config['SESSION_FILE_DIR'] = './flask_session'  # folder where session files are saved
+app.config['SESSION_PERMANENT'] = False  # session expires when browser closes
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # allows browser to send session cookie back after external redirects (e.g. Google OAuth)
+app.config['SESSION_COOKIE_SECURE'] = False  # allows session cookie over plain http (required for localhost dev)
+app.config['SESSION_COOKIE_NAME'] = 'spotify_youtube_session'
+Session(app)
 
 app.register_blueprint(spotify_blueprint, url_prefix='/spotify')
 app.register_blueprint(youtube_blueprint, url_prefix='/youtube')
