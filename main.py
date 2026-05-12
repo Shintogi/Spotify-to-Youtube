@@ -1,10 +1,12 @@
 import os
-from dotenv import load_dotenv 
+from dotenv import load_dotenv
+from requests import Session 
 load_dotenv() #runs the env before the blueprints to prevent running into client id invalid error
 from flask import Flask, render_template
 from spotify import spotify_blueprint
 from youtube import youtube_blueprint
 from connector import connector_blueprint
+from flask_session import Session
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')
 app.config['SESSION_TYPE'] = 'filesystem'  # stores session data in server files instead of browser cookie

@@ -9,7 +9,7 @@ youtube_blueprint = Blueprint('youtube', __name__)
 # load env variables
 Y_Client_ID = os.getenv('YOUTUBE_CLIENT_ID')
 Y_Client_Secret = os.getenv('YOUTUBE_CLIENT_SECRET')
-REDIRECT_URI = 'http://localhost:5000/youtube/callback'
+REDIRECT_URI = 'http://127.0.0.1:5000/youtube/callback'
 AUTH_URL = 'https://accounts.google.com/o/oauth2/auth'
 TOKEN_URL = 'https://oauth2.googleapis.com/token'
 API_BASE_URL = 'https://www.googleapis.com/youtube/v3/'
@@ -43,7 +43,9 @@ def youtube_login():
         'response_type': 'code',
         'scope': scope,
         'access_type': 'offline',
-        'prompt': 'select_account consent'  # Added select_account to force account picker
+        'prompt': 'select_account consent', # Added select_account to force account picker
+        'state': session['pending_playlist_id']
+       
     }
     
     auth_url = f"{AUTH_URL}?{urllib.parse.urlencode(parameters)}"
@@ -65,6 +67,8 @@ def youtube_callback():
         token_info = response.json()
         session['yt_access_token'] = token_info.get('access_token')
         session['yt_refresh_token'] = token_info.get('refresh_token')
+        state = request.args['state'] # Recover playlist ID from OAuth state parameter
+        session['pending_playlist_id'] = state 
         return redirect('/youtube/create_playlist')
 
 @youtube_blueprint.route('/create_playlist', methods=['GET', 'POST'])
@@ -133,8 +137,6 @@ def create_youtube_playlist():
         if response.status_code == 200:
             playlist_data = response.json()
             youtube_playlist_id = playlist_data['id']
-            
-            # Get the Spotify playlist ID from session
             spotify_playlist_id = session.get('pending_playlist_id')
             
             if not spotify_playlist_id:
